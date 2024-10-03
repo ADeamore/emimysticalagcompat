@@ -83,6 +83,8 @@ minecraft {
         }
 
         client {
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
         }
@@ -132,11 +134,15 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    //emi
+    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}:api")
+    runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}")
 
-    compileOnly fg.deobf("curse.maven:mysticalag-246640:5714744")
-    compileOnly fg.deobf("curse.maven:cucumber-272335:5714571")
-    compileOnly fg.deobf("dev.emi:emi-forge:1.1.13+1.20.1:api")
-    runtimeOnly fg.deobf("dev.emi:emi-forge:1.1.13+1.20.1")
+    //mystical agriculture
+    implementation fg.deobf("curse.maven:mysticalag-246640:5714744")
+
+    //cucumber
+    runtimeOnly fg.deobf("curse.maven:cucumber-272335:5714571")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
