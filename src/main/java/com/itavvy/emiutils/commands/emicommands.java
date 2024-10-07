@@ -21,7 +21,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import com.itavvy.emiutils.emiutils;
 
 @Mod.EventBusSubscriber(modid = emiutils.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class emihideitem {
+public class emicommands {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
@@ -29,8 +29,8 @@ public class emihideitem {
     }
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("emihideitem").executes(emihideitem::executehide));
-        dispatcher.register(Commands.literal("emiunhideitem").executes(emihideitem::executeunhide));
+        dispatcher.register(Commands.literal("emihideitem").executes(emicommands::executehide));
+        dispatcher.register(Commands.literal("emiunhideitem").executes(emicommands::executeunhide));
     }
 
     public static int executehide(CommandContext<CommandSourceStack> command) throws CommandSyntaxException {

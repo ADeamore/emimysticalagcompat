@@ -1,8 +1,10 @@
 package com.itavvy.emiutils;
 
-import com.itavvy.emiutils.commands.emihideitem;
+import com.itavvy.emiutils.commands.emicommands;
 import com.itavvy.emiutils.config.ClientConfig;
 import com.mojang.logging.LogUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,58 +39,99 @@ public class emiutils
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC,"EMIUitils/RemovalList.toml");
 
-        MinecraftForge.EVENT_BUS.register(new emihideitem());
+        MinecraftForge.EVENT_BUS.register(new emicommands());
     }
 
     private void commonSetup(final FMLCommonSetupEvent event){
     }
 
     public static Boolean removeitem(ItemStack stack){
-        List<ItemStack> tempbannedlist = bannedlist;
-        tempbannedlist.add(stack);
 
-        ArrayList<String> templist = new ArrayList<String>();
-        Iterator<ItemStack> iterator = tempbannedlist.iterator();
+        ArrayList<String> tempitemlist = new ArrayList<String>();
+        ArrayList<String> temptaglist = new ArrayList<String>();
+        Iterator<ItemStack> iterator = bannedlist.iterator();
+
+        String stacktags = "";
+        try {
+            stacktags = stack.getTag().toString();
+        } catch (Exception e) {
+        }
 
         String newitemname = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
 
         while(iterator.hasNext()){
-            String tempitem = ForgeRegistries.ITEMS.getKey(iterator.next().getItem()).toString();
+            ItemStack nextitem = iterator.next();
+            String tempitem = ForgeRegistries.ITEMS.getKey(nextitem.getItem()).toString();
+            String temptags = "";
+            try{
+                temptags = nextitem.getTag().toString();
+            }catch (Exception e){
+            }
 
-            if(tempitem.equals(newitemname)) return false;
+            if(tempitem.equals(newitemname) & temptags.equals(stacktags)) return false;
 
-            templist.add(tempitem);
+            tempitemlist.add(tempitem);
+            temptaglist.add(temptags);
         }
+
+        tempitemlist.add(newitemname);
+        temptaglist.add(stacktags);
+
+        List<ItemStack> tempbannedlist = bannedlist;
+
+        int stacksize = stack.getCount();
+        stack.setCount(1);
+        tempbannedlist.add(stack);
+        stack.setCount(stacksize);
         bannedlist = tempbannedlist;
-        ClientConfig.MASTER_LIST.set(templist);
+
+        ClientConfig.COMPOUND_TAGS.set(temptaglist);
+        ClientConfig.MASTER_LIST.set(tempitemlist);
         return true;
     }
 
     public static Boolean unhideitem(ItemStack stack){
 
+        int stackcount = stack.getCount();
+        stack.setCount(1);
+
         boolean works = false;
         List<ItemStack> tempitemlist = new ArrayList<ItemStack>();
 
         ArrayList<String> templist = new ArrayList<String>();
+        ArrayList<String> temptagslist = new ArrayList<String>();
         Iterator<ItemStack> iterator = bannedlist.iterator();
 
+        String newtags = "";
         String newitemname = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
+        try{
+            newtags = stack.getTag().toString();
+        } catch (Exception e) {
+        }
 
         while(iterator.hasNext()){
             ItemStack tempitem = iterator.next();
             String tempstring = ForgeRegistries.ITEMS.getKey(tempitem.getItem()).toString();
+            String temptags = "";
+            try {
+                temptags = tempitem.getTag().toString();
+            }catch (Exception e){
+            }
 
-            if(!tempstring.equals(newitemname)){
+            if(!(tempstring.equals(newitemname) & temptags.equals(newtags))){
                 templist.add(tempstring);
                 tempitemlist.add(tempitem);
+                temptagslist.add(temptags);
             }else{
                 works = true;
             }
         }
         if(works){
             ClientConfig.MASTER_LIST.set(templist);
+            ClientConfig.COMPOUND_TAGS.set(temptagslist);
             bannedlist = tempitemlist;
         }
+        stack.setCount(stackcount);
         return works;
     }
 
@@ -96,9 +139,17 @@ public class emiutils
         try{
             bannedlist.clear();
             List<String> list = ClientConfig.MASTER_LIST.get();
+            List<String> tags = ClientConfig.COMPOUND_TAGS.get();
             Iterator<String> iterator = list.iterator();
+            Iterator<String> tagiterator = tags.iterator();
             while(iterator.hasNext()) {
-                bannedlist.add(ForgeRegistries.ITEMS.getValue(new ResourceLocation(iterator.next())).getDefaultInstance());
+                ItemStack item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(iterator.next())).getDefaultInstance();
+                String thistagsstring = tagiterator.next();
+                if(!thistagsstring.equals("")) {
+                    CompoundTag thistags = TagParser.parseTag(thistagsstring);
+                    item.setTag(thistags);
+                }
+                bannedlist.add(item);
             }
         } catch (Exception e) {
         }

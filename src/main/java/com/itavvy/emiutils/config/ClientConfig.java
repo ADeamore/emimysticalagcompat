@@ -13,11 +13,13 @@ public class ClientConfig {
     public static final ForgeConfigSpec SPEC;
 
     public static final ForgeConfigSpec.ConfigValue<List<String>> MASTER_LIST;
+    public static final ForgeConfigSpec.ConfigValue<List<String>> COMPOUND_TAGS;
 
     static{
         BUILDER.push("EMIUtils Removed Items List");
 
         MASTER_LIST = BUILDER.comment("Begin banned item list").define("BannedList",new ArrayList<String>());
+        COMPOUND_TAGS = BUILDER.comment("Begin banned tag list").define("BannedTags",new ArrayList<String>());
 
         BUILDER.pop();
         SPEC = BUILDER.build();

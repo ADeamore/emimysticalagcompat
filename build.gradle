@@ -116,11 +116,11 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven {
-        url "https://cursemaven.com"
-    }
-    maven {
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
+    }
+    maven {
+        url "https://cursemaven.com"
     }
     // Put repositories for dependencies here
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
@@ -138,11 +138,7 @@ dependencies {
     compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}:api")
     runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}")
 
-    //mystical agriculture
-    implementation fg.deobf("curse.maven:mysticalag-246640:5714744")
-
-    //cucumber
-    runtimeOnly fg.deobf("curse.maven:cucumber-272335:5714571")
+    implementation fg.deobf("curse.maven:ctm-64578:5768530")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
