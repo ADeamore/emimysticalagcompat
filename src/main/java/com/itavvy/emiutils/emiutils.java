@@ -52,9 +52,8 @@ public class emiutils
         Iterator<ItemStack> iterator = bannedlist.iterator();
 
         String stacktags = "";
-        try {
+        if(stack.hasTag()){
             stacktags = stack.getTag().toString();
-        } catch (Exception e) {
         }
 
         String newitemname = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
@@ -63,9 +62,8 @@ public class emiutils
             ItemStack nextitem = iterator.next();
             String tempitem = ForgeRegistries.ITEMS.getKey(nextitem.getItem()).toString();
             String temptags = "";
-            try{
+            if(nextitem.hasTag()){
                 temptags = nextitem.getTag().toString();
-            }catch (Exception e){
             }
 
             if(tempitem.equals(newitemname) & temptags.equals(stacktags)) return false;
@@ -104,18 +102,16 @@ public class emiutils
 
         String newtags = "";
         String newitemname = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
-        try{
+        if(stack.hasTag()){
             newtags = stack.getTag().toString();
-        } catch (Exception e) {
         }
 
         while(iterator.hasNext()){
             ItemStack tempitem = iterator.next();
             String tempstring = ForgeRegistries.ITEMS.getKey(tempitem.getItem()).toString();
             String temptags = "";
-            try {
+            if(tempitem.hasTag()){
                 temptags = tempitem.getTag().toString();
-            }catch (Exception e){
             }
 
             if(!(tempstring.equals(newitemname) & temptags.equals(newtags))){
